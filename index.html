@@ -93,23 +93,8 @@
               console.log(data)
               createCards(data)
             })
-            .catch(error => {
-              switch (error.message) {
-                case "400":
-                  alert("Please check form values");
-                  break;
-                case "401":
-                  alert("Email Already exists");
-                  break;
-                case "402":
-                  alert("All Data except LastName are Mandatory");
-                  break;
-                case "500":
-                  alert("Please Try after some time...");
-                  break;
-                default:
+            .catch(error => {  
                   console.error(error);
-              }
             })
     
   </script>
