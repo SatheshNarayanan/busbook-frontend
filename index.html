@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Bus List | Ticket Booking</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <style>
+    body {
+      background-color: #cbeaed
+    }
+  </style>
+</head>
+<div class="container mt-5" id ="mainContainer">
+
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+  integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  <script>
+    const mainContainer = document.getElementById("mainContainer")
+
+    const createElements = (tagType,classNames,idNames,innerdata,appendToType,appendTo) => {
+      const tags = document.createElement(tagType)
+      tags.setAttribute("class",classNames)
+      tags.setAttribute("id",idNames)
+      tags.innerHTML = innerdata 
+      if(appendToType === 'Child'){
+        appendTo.appendChild(tags)
+      }
+      else{
+        appendTo.append(tags)
+      }
+    }
+
+    const createCards = ( elemArr ) => {
+      elemArr.forEach( element => {
+        const depart = new Date(element.depart).toLocaleString();
+        const arrive = new Date(element.arrive).toLocaleString();
+        createElements("div","card mb-3",`${element.id}head`,'','Child',mainContainer)
+        const mainCard = document.getElementById(`${element.id}head`)
+        createElements("div","card-body",`${element.id}body`,'','Child',mainCard)
+        const mainBody = document.getElementById(`${element.id}body`)
+        createElements("h5","card-title",``,element.busName,'Child',mainBody)
+        createElements("p","card-text small",``,element.busDesc,'notChild',mainBody)
+        createElements("div","row",`${element.id}row1`,'','notChild',mainBody)
+        const firstRow = document.getElementById(`${element.id}row1`)
+        createElements("i","fa fa-bus fa-4x col-lg-1",'','',"Child",firstRow)
+        createElements("p","col-lg-2",``,`From : ${element.from}`,"Child",firstRow)
+        createElements("p","col-lg-2",'',`To : ${element.to}`,"Child",firstRow)
+        createElements("p","col-lg-4",'',`Departure time :${depart}`,"Child",firstRow)
+        createElements("p","col-lg-3",'',`Arrival time: ${arrive}`,"Child",firstRow)
+        createElements("div","row my-2",`${element.id}row2`,'','notChild',mainBody)
+        const secondRow = document.getElementById(`${element.id}row2`)
+        createElements("p","col-lg-2",``,`Duration : ${element.duration} hrs`,"Child",secondRow)
+        createElements("p","col-lg-2",'',`Seats Available : ${element.seatsAvailable}`,"Child",secondRow)
+        createElements("p","col-lg-2",`${element.id}rating`,`Rating :`,"Child",secondRow)
+        const rating = document.getElementById(`${element.id}rating`)
+        createElements("label",'',`${element.id}ratingData`,element.rating,"Child",rating)
+        const ratingData = document.getElementById(`${element.id}ratingData`)
+        const ratingColor = (element.rating< 4.8 ) ? '#ff5f40' : '#47b300'
+        ratingData.setAttribute( "style",`background-color : ${ratingColor}`)
+        createElements("p","col-lg-2",'',`Starting from : ${element.price}`,"Child",secondRow)
+        createElements("a","btn btn-primary",`${element.id}vwseats`,`View Seats`,"Child",secondRow) 
+        document.getElementById(`${element.id}vwseats`).setAttribute("href","http://localhost:8080/apibus/buslist/:id")
+      })
+    }
+
+    const submitUrl = 'http://localhost:8080/apibus/busList'
+          const config = {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Origin': self.location.origin
+            }
+          }
+          console.log(config)
+          fetch(submitUrl, config)
+            .then(response => {
+              if (response.status === 200) {
+                return response.json()
+              } else {
+                throw (new Error(response.status))
+              }
+            }
+            )
+            .then(data => {
+              console.log(data)
+              createCards(data)
+            })
+            .catch(error => {
+              switch (error.message) {
+                case "400":
+                  alert("Please check form values");
+                  break;
+                case "401":
+                  alert("Email Already exists");
+                  break;
+                case "402":
+                  alert("All Data except LastName are Mandatory");
+                  break;
+                case "500":
+                  alert("Please Try after some time...");
+                  break;
+                default:
+                  console.error(error);
+              }
+            })
+    
+  </script>
+</body>
+
+</html>
